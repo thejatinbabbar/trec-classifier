@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "document-classification"
+version = "0.1.0"
+description = "Document classification"
+authors = ["Jatin Babbar"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+torch = "^2.4.0"
+torchvision = "^0.19.0"
+torchaudio = "^2.4.0"
+pytorch-lightning = "^2.4.0"
+transformers = "^4.44.0"
+datasets = "^2.21.0"
+mlflow = "^2.15.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+black = "^24.8.0"
+flake8 = "^7.1.1"
+isort = "^5.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
