@@ -20,3 +20,6 @@ check:
 	poetry run black --check classifier/ ; \
 	poetry run isort --check-only classifier/ ; \
 	poetry run flake8 classifier/
+
+test:
+	poetry run pytest
