@@ -23,12 +23,12 @@ class TrecDataset(Dataset):
 
 
 class TRECDataModule(pl.LightningDataModule):
-    def __init__(self, batch_size=16, max_length=512, dataset_name="trec", tokenizer_name="distilbert-base-uncased"):
+    def __init__(self, batch_size=16, max_length=512, dataset_name="trec", tokenizer_name="prajjwal1/bert-tiny"):
         super().__init__()
         self.batch_size = batch_size
         self.max_length = max_length
         self.dataset_name = dataset_name
-        self.tokenizer = AutoTokenizer.from_pretrained("prajjwal1/bert-tiny")
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.allow_zero_length_dataloader_with_multiple_devices = True
 
     def setup(self, stage=None):
@@ -36,8 +36,8 @@ class TRECDataModule(pl.LightningDataModule):
         dataset = load_dataset(self.dataset_name)
 
         # Tokenize the dataset
-        self.train_dataset = self.tokenize_dataset(dataset["train"][:100])
-        self.test_dataset = self.tokenize_dataset(dataset["test"][:50])
+        self.train_dataset = self.tokenize_dataset(dataset["train"])
+        self.test_dataset = self.tokenize_dataset(dataset["test"])
         self.train_dataset, self.val_dataset = train_test_split(
             self.train_dataset, test_size=0.2, shuffle=True, random_state=42
         )

@@ -10,4 +10,7 @@ dist/
 build/
 *.egg-info/
 mlruns/
+mlartifacts/
 lightning_logs/
+checkpoints/
+experiments/
