@@ -23,3 +23,9 @@ check:
 
 test:
 	poetry run pytest
+
+build_flask_app:
+	docker build -t trec-classifier-flask .
+
+run_flask_app:
+	docker run -p 5001:5001 trec-classifier-flask

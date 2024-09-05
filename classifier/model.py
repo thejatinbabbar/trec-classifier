@@ -122,3 +122,13 @@ class Classifier(pl.LightningModule):
             },
         )
         print(f"ONNX model saved to {onnx_file_path}")
+
+    def predict_with_pytorch(self, inputs):
+
+        with torch.no_grad():
+            outputs = self(inputs["input_ids"], inputs["attention_mask"])
+
+        logits = outputs.logits
+        predicted_class_id = torch.argmax(logits, dim=-1).item()
+
+        return predicted_class_id

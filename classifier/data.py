@@ -47,8 +47,12 @@ class TRECDataModule(pl.LightningDataModule):
         logging.info(f"Validation DataLoader size: {len(self.val_dataloader())}")
         logging.info(f"Test DataLoader size: {len(self.test_dataloader())}")
 
+    def generate_encodings(self, texts):
+        encodings = self.tokenizer(texts, truncation=True, padding="max_length", max_length=self.max_length, return_tensors="pt")
+        return encodings
+
     def tokenize_dataset(self, dataset):
-        encodings = self.tokenizer(dataset["text"], truncation=True, padding="max_length", max_length=self.max_length)
+        encodings = self.generate_encodings(dataset["text"])
         labels = dataset["coarse_label"]
         return TrecDataset(encodings, labels)
 
