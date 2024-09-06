@@ -1,26 +1,22 @@
-import os
-
 import mlflow
 import pytorch_lightning as pl
 import torch
-from transformers import AutoModelForSequenceClassification, DistilBertForSequenceClassification
+from transformers import AutoModelForSequenceClassification
 
 
 class Classifier(pl.LightningModule):
     def __init__(
         self,
-        n_classes=6,
-        learning_rate=1e-5,
-        max_epochs=2,
-        model_dir=".",
-        pretrained_model_name="prajjwal1/bert-tiny",
+        n_classes,
+        learning_rate,
+        max_epochs,
+        pretrained_model_name,
     ):
         super().__init__()
 
         self.n_classes = n_classes
         self.learning_rate = learning_rate
         self.max_epochs = max_epochs
-        self.model_dir = model_dir if model_dir is not None else "checkpoint"
         self.pretrained_model_name = pretrained_model_name
 
         self.trainer = pl.Trainer(
@@ -37,13 +33,8 @@ class Classifier(pl.LightningModule):
         for param in self.model.bert.parameters():
             param.requires_grad = False
 
-        self.log_params_to_mlflow()
-
     def forward(self, input_ids, attention_mask, labels=None):
         return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-
-    def log_params_to_mlflow(self):
-        mlflow.log_param("learning_rate", self.learning_rate)
 
     def training_step(self, batch, batch_idx):
         input_ids = batch["input_ids"]
@@ -89,7 +80,7 @@ class Classifier(pl.LightningModule):
         if self.model is None:
             raise ValueError("Model must be initialized before training.")
 
-        self.trainer.fit(self, data_loader)
+        self.trainer.fit(self, train_dataloaders=data_loader)
 
     def evaluate_model(self, data_loader):
 
@@ -99,15 +90,13 @@ class Classifier(pl.LightningModule):
         results = self.trainer.test(self, data_loader)
         return results
 
-    def save_model(self, output_dir):
+    def save_model(self, pytorch_file_path, onnx_file_path):
 
         # Save the PyTorch model
-        pytorch_file_path = os.path.join(output_dir, "model.pth")
         self.trainer.save_checkpoint(pytorch_file_path)
         print(f"PyTorch model saved to {pytorch_file_path}")
 
         # Save the ONNX model
-        onnx_file_path = os.path.join(output_dir, "model.onnx")
         dummy_input = torch.ones(1, 64, dtype=torch.long)
         torch.onnx.export(
             self,

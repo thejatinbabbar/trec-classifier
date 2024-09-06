@@ -1,9 +1,9 @@
 import logging
 import os
 from argparse import ArgumentParser
-from datetime import datetime
 
 import mlflow
+import yaml
 
 from classifier.data import TRECDataModule
 from classifier.model import Classifier
@@ -14,40 +14,50 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    now = datetime.now().strftime("%Y%m%d_%H%M%S")
-
     arg_parser = ArgumentParser()
-    arg_parser.add_argument("--output_dir", default="experiments", help="path to output directory")
-    arg_parser.add_argument("--experiment_name", default=now, help="name of experiment")
+    arg_parser.add_argument("--config", default="config/config.yml")
+    arg_parser.add_argument("--experiment_name", default="trec-classification-training")
 
     args = arg_parser.parse_args()
 
-    experiment_dir = os.path.join(args.output_dir, args.experiment_name)
-
-    os.makedirs(args.output_dir, exist_ok=True)
-    os.makedirs(experiment_dir)
+    config = yaml.safe_load(open(args.config))
 
     # Set up MLflow tracking URI
-    mlflow_uri = "http://127.0.0.1:5000"
-    mlflow.set_tracking_uri(mlflow_uri)
-    mlflow.set_experiment(args.experiment_name)
+    mlflow.set_tracking_uri(config["mlflow"]["mlflow_uri"])
+    mlflow.set_experiment(experiment_name=args.experiment_name)
+
+    training_config = config["training"]
+    for param, value in training_config.items():
+        mlflow.log_param(param, value)
 
     # Initialize data module
-    trec_data_module = TRECDataModule(batch_size=16, max_length=128)
-    trec_data_module.setup()
+    trec_data_module = TRECDataModule(
+        tokenizer=training_config["pretrained_model_name"],
+        batch_size=training_config["batch_size"],
+        max_length=training_config["max_length"],
+        n_workers=training_config["n_workers"],
+        test_size=training_config["test_size"],
+        seed=training_config["seed"],
+    )
 
-    with mlflow.start_run():
-        # Initialize model
-        model = Classifier(n_classes=6, learning_rate=1e-5, max_epochs=2, model_dir=experiment_dir)
-        model.initialize_model(pretrained_model_name="prajjwal1/bert-tiny")
+    # Initialize model
+    model = Classifier(
+        n_classes=training_config["n_classes"],
+        learning_rate=training_config["learning_rate"],
+        max_epochs=training_config["max_epochs"],
+        pretrained_model_name=training_config["pretrained_model_name"],
+    )
 
-        # Train model
-        model.train_model(trec_data_module)
+    # Train model
+    model.train_model(trec_data_module)
 
-        # Run on test data
-        model.evaluate(trec_data_module)
+    # Run on test data
+    model.evaluate_model(trec_data_module)
 
-        # Export model
-        model.save_model(experiment_dir)
+    # Export model
+    pytorch_file_path = training_config["output_model_pytorch"]
+    onnx_file_path = training_config["output_model_onnx"]
 
-    _ = None
+    model.save_model(pytorch_file_path, onnx_file_path)
+    mlflow.log_artifact(pytorch_file_path)
+    mlflow.log_artifact(onnx_file_path)

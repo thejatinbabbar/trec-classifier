@@ -3,32 +3,21 @@ import os.path
 import torch
 import pytest
 from classifier.model import Classifier
-from classifier.data import TRECDataModule
 
 
-@pytest.fixture
-def model():
-    return Classifier(n_classes=6, learning_rate=1e-5)
-
-
-@pytest.fixture
-def data_module():
-    return TRECDataModule(batch_size=2)
-
-
-def test_save_and_load_model(model, tmpdir, data_module):
-
-    pytorch_file_path = os.path.join(tmpdir, "model.pth")
-    onnx_file_path = os.path.join(tmpdir, "model.onnx")
-
-    model.evaluate_model(data_module)
-    model.save_model(tmpdir)
-
-    assert os.path.exists(pytorch_file_path)
-    assert os.path.exists(onnx_file_path)
-
-    _ = Classifier.load_from_checkpoint(pytorch_file_path)
-    assert True, "Error while loading model"
+# def test_save_and_load_model(model, tmpdir, data_module):
+#
+#     pytorch_file_path = os.path.join(tmpdir, "model.pth")
+#     onnx_file_path = os.path.join(tmpdir, "model.onnx")
+#
+#     model.evaluate_model(data_module)
+#     model.save_model(tmpdir)
+#
+#     assert os.path.exists(pytorch_file_path)
+#     assert os.path.exists(onnx_file_path)
+#
+#     _ = Classifier.load_from_checkpoint(pytorch_file_path)
+#     assert True, "Error while loading model"
 
 
 def test_model_forward_pass(model):

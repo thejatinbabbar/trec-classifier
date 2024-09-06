@@ -22,7 +22,7 @@ check:
 	poetry run flake8 classifier/
 
 test:
-	poetry run pytest
+	poetry run pytest --cov=classifier --cov=app
 
 build_flask_app:
 	docker build -t trec-classifier-flask .

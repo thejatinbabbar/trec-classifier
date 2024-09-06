@@ -1,0 +1,25 @@
+mlflow:
+  mlflow_uri: "http://127.0.0.1:5000"
+
+training:
+  batch_size: 16
+  max_length: 128
+  n_classes: 6
+  learning_rate: 0.00001
+  max_epochs: 2
+  dataset_name: "trec"
+  seed: 42
+  test_size: 0.2
+  n_workers: 10
+  pretrained_model_name: "prajjwal1/bert-tiny"
+  output_model_pytorch: "model.pth"
+  output_model_onnx: "model.onnx"
+
+inference:
+  model_type: "pytorch"
+  model_uri: "mlflow-artifacts:/879669838587619915/a28ba0f954374d8c974236e0e3e61872/artifacts/model.pth"
+  onnx_model_uri: "mlflow-artifacts:/879669838587619915/a28ba0f954374d8c974236e0e3e61872/artifacts/model.onnx"
+
+flask:
+  host: "0.0.0.0"
+  port: 5001
