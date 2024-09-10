@@ -1,8 +1,13 @@
 # Makefile for formatting and linting Python code
 
+install:
+	pip install --upgrade pip && \
+	pip install poetry && \
+	poetry install
+
 # Formatting with Black
 black:
-	poetry run black classifier/ --
+	poetry run black classifier/
 
 # Sorting imports with isort
 isort:
