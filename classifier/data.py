@@ -24,7 +24,7 @@ class TRECDataModule(pl.LightningDataModule):
     def __init__(self, tokenizer, batch_size, max_length, n_workers, test_size, seed):
         super().__init__()
 
-        dataset = load_dataset("trec")
+        dataset = load_dataset("trec", trust_remote_code=True)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
 
         self.batch_size = batch_size

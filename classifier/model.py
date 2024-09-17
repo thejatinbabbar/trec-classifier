@@ -2,6 +2,7 @@ import mlflow
 import pytorch_lightning as pl
 import torch
 from transformers import AutoModelForSequenceClassification
+from torchmetrics import Accuracy, Precision, Recall
 
 
 class Classifier(pl.LightningModule):
@@ -33,6 +34,10 @@ class Classifier(pl.LightningModule):
         for param in self.model.bert.parameters():
             param.requires_grad = False
 
+        self.accuracy = Accuracy(task="multiclass", num_classes=self.n_classes)
+        self.precision = Precision(task="multiclass", num_classes=self.n_classes, average='macro')
+        self.recall = Recall(task="multiclass", num_classes=self.n_classes, average='macro')
+
     def forward(self, input_ids, attention_mask, labels=None):
         return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
 
@@ -44,8 +49,20 @@ class Classifier(pl.LightningModule):
         outputs = self(input_ids, attention_mask, labels)
         loss = torch.nn.functional.cross_entropy(outputs.logits, labels)
 
-        # Log loss to MLflow
+        # Get predictions
+        preds = torch.argmax(outputs.logits, dim=1)
+        
+        # Compute metrics
+        acc = self.accuracy(preds, labels)
+        prec = self.precision(preds, labels)
+        rec = self.recall(preds, labels)
+
+        # Log metrics to MLflow
         mlflow.log_metric("train_loss", loss.item())
+        mlflow.log_metric("train_accuracy", acc.item())
+        mlflow.log_metric("train_precision", prec.item())
+        mlflow.log_metric("train_recall", rec.item())
+        
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -56,8 +73,20 @@ class Classifier(pl.LightningModule):
         outputs = self(input_ids, attention_mask, labels)
         loss = torch.nn.functional.cross_entropy(outputs.logits, labels)
 
+        # Get predictions
+        preds = torch.argmax(outputs.logits, dim=1)
+        
+        # Compute metrics
+        acc = self.accuracy(preds, labels)
+        prec = self.precision(preds, labels)
+        rec = self.recall(preds, labels)
+
         # Log loss to MLflow
         mlflow.log_metric("val_loss", loss)
+        mlflow.log_metric("val_accuracy", acc.item())
+        mlflow.log_metric("val_precision", prec.item())
+        mlflow.log_metric("val_recall", rec.item())
+
         return loss
 
     def test_step(self, batch, batch_idx):

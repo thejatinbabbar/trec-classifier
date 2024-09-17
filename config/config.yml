@@ -1,5 +1,7 @@
+step_to_execute: "train"
+
 mlflow:
-  mlflow_uri: "http://127.0.0.1:5000"
+  mlflow_uri: "http://mlflow-server:5001"
 
 training:
   batch_size: 16
@@ -10,15 +12,14 @@ training:
   dataset_name: "trec"
   seed: 42
   test_size: 0.2
-  n_workers: 10
+  n_workers: 8
   pretrained_model_name: "prajjwal1/bert-tiny"
   output_model_pytorch: "model.pth"
   output_model_onnx: "model.onnx"
 
 inference:
-  model_type: "pytorch"
-  model_uri: "mlflow-artifacts:/879669838587619915/a28ba0f954374d8c974236e0e3e61872/artifacts/model.pth"
-  onnx_model_uri: "mlflow-artifacts:/879669838587619915/a28ba0f954374d8c974236e0e3e61872/artifacts/model.onnx"
+  model_type: "onnx"
+  onnx_model_uri: "mlflow-artifacts:/588397206089841990/c1429f3438464ff2b9f81d17a4ad5795/artifacts/model"
 
 flask:
   host: "0.0.0.0"

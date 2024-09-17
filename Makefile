@@ -1,5 +1,13 @@
 # Makefile for formatting and linting Python code
 
+clean:
+	find . -type d -empty -delete
+	find . -name "*.pyc" -delete
+	find . -name "*.log" -delete
+	find . -name "*.tmp" -delete
+	find . -name "*.swp" -delete
+	find . -name "__pycache__" -type d -exec rm -r {} +
+
 install:
 	pip install --upgrade pip && \
 	pip install poetry && \
@@ -29,8 +37,8 @@ check:
 test:
 	poetry run pytest --cov=classifier --cov=app
 
-build_flask_app:
-	docker build -t trec-classifier-flask .
+run_training:
+	docker compose up --build training
 
-run_flask_app:
-	docker run -p 5001:5001 trec-classifier-flask
+run_app:
+	docker compose up --build inference

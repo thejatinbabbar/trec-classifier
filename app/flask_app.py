@@ -8,6 +8,10 @@ app = Flask(__name__)
 config = yaml.safe_load(open('config/config.yml'))
 inference_pipeline = InferencePipeline(config)
 
+@app.route('/')
+def home():
+    return app.send_static_file('index.html')
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -18,4 +22,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5000)
