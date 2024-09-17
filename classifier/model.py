@@ -1,8 +1,8 @@
 import mlflow
 import pytorch_lightning as pl
 import torch
-from transformers import AutoModelForSequenceClassification
 from torchmetrics import Accuracy, Precision, Recall
+from transformers import AutoModelForSequenceClassification
 
 
 class Classifier(pl.LightningModule):
@@ -35,8 +35,8 @@ class Classifier(pl.LightningModule):
             param.requires_grad = False
 
         self.accuracy = Accuracy(task="multiclass", num_classes=self.n_classes)
-        self.precision = Precision(task="multiclass", num_classes=self.n_classes, average='macro')
-        self.recall = Recall(task="multiclass", num_classes=self.n_classes, average='macro')
+        self.precision = Precision(task="multiclass", num_classes=self.n_classes, average="macro")
+        self.recall = Recall(task="multiclass", num_classes=self.n_classes, average="macro")
 
     def forward(self, input_ids, attention_mask, labels=None):
         return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
@@ -51,7 +51,7 @@ class Classifier(pl.LightningModule):
 
         # Get predictions
         preds = torch.argmax(outputs.logits, dim=1)
-        
+
         # Compute metrics
         acc = self.accuracy(preds, labels)
         prec = self.precision(preds, labels)
@@ -62,7 +62,7 @@ class Classifier(pl.LightningModule):
         mlflow.log_metric("train_accuracy", acc.item())
         mlflow.log_metric("train_precision", prec.item())
         mlflow.log_metric("train_recall", rec.item())
-        
+
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -75,7 +75,7 @@ class Classifier(pl.LightningModule):
 
         # Get predictions
         preds = torch.argmax(outputs.logits, dim=1)
-        
+
         # Compute metrics
         acc = self.accuracy(preds, labels)
         prec = self.precision(preds, labels)

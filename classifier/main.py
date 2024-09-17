@@ -3,8 +3,9 @@ import os
 from argparse import ArgumentParser
 
 import mlflow
-import yaml
 import onnx
+import yaml
+
 from classifier.data import TRECDataModule
 from classifier.model import Classifier
 
@@ -66,11 +67,9 @@ if __name__ == "__main__":
         # mlflow.log_artifact(pytorch_file_path)
         # mlflow.log_artifact(onnx_file_path)
         # mlflow.pytorch.log_model(model, "pytorch_model")
-        
+
         onnx_model = onnx.load(onnx_file_path)
         mlflow.onnx.log_model(onnx_model, "model")
-
-
 
     elif step_to_execute == "evaluate":
         evaluation_config = config["training"]
