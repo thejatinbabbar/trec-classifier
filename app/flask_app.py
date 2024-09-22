@@ -18,7 +18,7 @@ def predict():
     data = request.json
     text = data['text']
     prediction = inference_pipeline.run_onnx_session(text)
-    return jsonify({"prediction": prediction})
+    return jsonify({"result": prediction})
 
 
 if __name__ == '__main__':
