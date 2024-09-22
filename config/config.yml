@@ -8,7 +8,7 @@ training:
   max_length: 128
   n_classes: 6
   learning_rate: 0.00001
-  max_epochs: 2
+  max_epochs: 6
   dataset_name: "trec"
   seed: 42
   test_size: 0.2
@@ -19,7 +19,7 @@ training:
 
 inference:
   model_type: "onnx"
-  onnx_model_uri: "mlflow-artifacts:/588397206089841990/c1429f3438464ff2b9f81d17a4ad5795/artifacts/model"
+  onnx_model_uri: "mlflow-artifacts:/588397206089841990/55f66a78826c4b9a86d093c514dba3be/artifacts/model"
 
 flask:
   host: "0.0.0.0"

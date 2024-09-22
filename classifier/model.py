@@ -30,9 +30,9 @@ class Classifier(pl.LightningModule):
             num_labels=self.n_classes,
         )
 
-        # Freeze all parameters except the classifier head
-        for param in self.model.bert.parameters():
-            param.requires_grad = False
+        # # Freeze all parameters except the classifier head
+        # for param in self.model.bert.parameters():
+        #     param.requires_grad = False
 
         self.accuracy = Accuracy(task="multiclass", num_classes=self.n_classes)
         self.precision = Precision(task="multiclass", num_classes=self.n_classes, average="macro")
