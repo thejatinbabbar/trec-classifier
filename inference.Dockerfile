@@ -5,10 +5,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy only the necessary files
-# COPY pyproject.toml /app/
-# COPY app /app/app
-# COPY classifier /app/classifier
-# COPY config /app/config
+ COPY pyproject.toml /app/
+ COPY app /app/app
+ COPY classifier /app/classifier
+ COPY config /app/config
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --upgrade pip

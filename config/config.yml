@@ -18,8 +18,7 @@ training:
   output_model_onnx: "model.onnx"
 
 inference:
-  model_type: "onnx"
-  onnx_model_uri: "mlflow-artifacts:/588397206089841990/55f66a78826c4b9a86d093c514dba3be/artifacts/model"
+  onnx_model_uri: "models:/trec-classifier/1"
 
 flask:
   host: "0.0.0.0"

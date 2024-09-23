@@ -1,3 +1,4 @@
+import os
 import mlflow
 import numpy as np
 import onnxruntime as ort
@@ -12,9 +13,14 @@ class InferencePipeline:
 
         self.config = config
 
-        mlflow.set_tracking_uri(self.config["mlflow"]["mlflow_uri"])
-        model_uri = mlflow.artifacts.download_artifacts(config["inference"]["onnx_model_uri"])
-        self.session = ort.InferenceSession(f"{model_uri}/model.onnx")
+        model_file = self.config["training"]["output_model_onnx"]
+
+        if os.path.exists(model_file):
+            self.session = ort.InferenceSession(model_file)
+        else:
+            mlflow.set_tracking_uri(self.config["mlflow"]["mlflow_uri"])
+            model_uri = mlflow.artifacts.download_artifacts(config["inference"]["onnx_model_uri"])
+            self.session = ort.InferenceSession(f"{model_uri}/{model_file}")
 
         self.tokenizer = AutoTokenizer.from_pretrained(config["training"]["pretrained_model_name"])
 
