@@ -2,11 +2,12 @@ import logging
 import os
 from argparse import ArgumentParser
 
+import boto3
 import mlflow
 import onnx
 import yaml
 
-from classifier.data import TRECDataModule
+from classifier.data import TRECDataModule, download_from_s3
 from classifier.model import Classifier
 
 if __name__ == "__main__":
@@ -18,6 +19,7 @@ if __name__ == "__main__":
     arg_parser = ArgumentParser()
     arg_parser.add_argument("--config", default="config/config.yml")
     arg_parser.add_argument("--experiment_name", default="trec-classification")
+    arg_parser.add_argument("--endpoint_url", default=None)
 
     args = arg_parser.parse_args()
 
@@ -29,6 +31,9 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(config["mlflow"]["mlflow_uri"])
     mlflow.set_experiment(experiment_name=f"{args.experiment_name}-{step_to_execute}")
 
+    s3_client = boto3.client("s3", endpoint_url=args.endpoint_url)
+    download_from_s3(s3_client, config["data"]["s3_bucket"], config["data"]["local_uri"], config["data"]["s3_prefix"])
+
     if step_to_execute == "train":
 
         training_config = config["training"]
@@ -37,6 +42,7 @@ if __name__ == "__main__":
 
         # Initialize data module
         trec_data_module = TRECDataModule(
+            data_uri=config['data']['local_uri'],
             tokenizer=training_config["pretrained_model_name"],
             batch_size=training_config["batch_size"],
             max_length=training_config["max_length"],
@@ -76,6 +82,7 @@ if __name__ == "__main__":
 
         # Initialize data module
         trec_data_module = TRECDataModule(
+            data_uri=config['data']['local_folder_path'],
             tokenizer=evaluation_config["pretrained_model_name"],
             batch_size=evaluation_config["batch_size"],
             max_length=evaluation_config["max_length"],

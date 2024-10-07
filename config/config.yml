@@ -3,6 +3,11 @@ step_to_execute: "train"
 mlflow:
   mlflow_uri: "http://mlflow-server:5001"
 
+data:
+  s3_bucket: "document-classification-2024"
+  s3_prefix: "data"
+  local_uri: "data-downloaded"
+
 training:
   batch_size: 16
   max_length: 128
