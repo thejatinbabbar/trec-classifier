@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
         # Initialize data module
         trec_data_module = TRECDataModule(
-            data_uri=config['data']['local_uri'],
+            data_uri=config["data"]["local_uri"],
             tokenizer=training_config["pretrained_model_name"],
             batch_size=training_config["batch_size"],
             max_length=training_config["max_length"],
@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
         # Initialize data module
         trec_data_module = TRECDataModule(
-            data_uri=config['data']['local_folder_path'],
+            data_uri=config["data"]["local_folder_path"],
             tokenizer=evaluation_config["pretrained_model_name"],
             batch_size=evaluation_config["batch_size"],
             max_length=evaluation_config["max_length"],

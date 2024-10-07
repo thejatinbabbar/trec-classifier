@@ -1,10 +1,11 @@
+import os
+
 import pytorch_lightning as pl
 import torch
 from datasets import load_from_disk
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer
-import os
 
 
 def download_from_s3(s3_client, bucket_name, local_dir, s3_prefix=None):
@@ -14,17 +15,17 @@ def download_from_s3(s3_client, bucket_name, local_dir, s3_prefix=None):
             os.makedirs(local_dir)
 
         # List all objects in the S3 bucket with the specified prefix
-        paginator = s3_client.get_paginator('list_objects_v2')
+        paginator = s3_client.get_paginator("list_objects_v2")
         page_iterator = paginator.paginate(Bucket=bucket_name, Prefix=s3_prefix)
 
         for page in page_iterator:
-            if 'Contents' in page:
-                for obj in page['Contents']:
+            if "Contents" in page:
+                for obj in page["Contents"]:
                     # Get the object key (file path in the bucket)
-                    s3_key = obj['Key']
+                    s3_key = obj["Key"]
 
                     # Define the local file path
-                    local_file_path = os.path.join(local_dir, os.path.relpath(s3_key, s3_prefix or ''))
+                    local_file_path = os.path.join(local_dir, os.path.relpath(s3_key, s3_prefix or ""))
 
                     # Ensure the local subdirectory exists
                     local_subdir = os.path.dirname(local_file_path)
@@ -32,7 +33,7 @@ def download_from_s3(s3_client, bucket_name, local_dir, s3_prefix=None):
                         os.makedirs(local_subdir)
 
                     # Download the file if it doesn't exist or if it's different
-                    if not os.path.exists(local_file_path) or obj['Size'] != os.path.getsize(local_file_path):
+                    if not os.path.exists(local_file_path) or obj["Size"] != os.path.getsize(local_file_path):
                         print(f"Downloading {s3_key} to {local_file_path}")
                         s3_client.download_file(bucket_name, s3_key, local_file_path)
                     else:
