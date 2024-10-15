@@ -1,4 +1,4 @@
-import pytest
+import pytest  # noqa
 
 
 def test_data_loaders(data_module):
