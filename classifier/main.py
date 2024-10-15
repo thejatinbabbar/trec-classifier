@@ -31,7 +31,13 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(config["mlflow"]["mlflow_uri"])
     mlflow.set_experiment(experiment_name=f"{args.experiment_name}-{step_to_execute}")
 
-    s3_client = boto3.client("s3", endpoint_url=args.endpoint_url, aws_access_key_id='localstack', aws_secret_access_key='localstack', region_name='us-east-1')
+    s3_client = boto3.client(
+        "s3",
+        endpoint_url=args.endpoint_url,
+        aws_access_key_id="localstack",
+        aws_secret_access_key="localstack",
+        region_name="us-east-1",
+    )
     download_from_s3(s3_client, config["data"]["s3_bucket"], config["data"]["local_uri"], config["data"]["s3_prefix"])
 
     if step_to_execute == "train":
