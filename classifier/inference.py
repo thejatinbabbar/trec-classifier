@@ -14,7 +14,7 @@ class InferencePipeline:
 
         self.config = config
 
-        model_file = self.config["training"]["output_model_onnx"]
+        model_file = self.config["model"]["output_model_onnx"]
 
         if os.path.exists(model_file):
             self.session = ort.InferenceSession(model_file)
@@ -23,10 +23,10 @@ class InferencePipeline:
             model_uri = mlflow.artifacts.download_artifacts(config["inference"]["onnx_model_uri"])
             self.session = ort.InferenceSession(f"{model_uri}/{model_file}")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(config["training"]["pretrained_model_name"])
+        self.tokenizer = AutoTokenizer.from_pretrained(config["model"]["pretrained_model_name"])
 
     def run_onnx_session(self, text):
-        inputs = generate_encodings(self.tokenizer, [text], self.config["training"]["max_length"])
+        inputs = generate_encodings(self.tokenizer, [text], self.config["model"]["max_length"])
         inputs = {
             "input_ids": np.array(inputs["input_ids"]),
             "attention_mask": np.array(inputs["attention_mask"]),

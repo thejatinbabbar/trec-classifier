@@ -10,27 +10,25 @@ services:
     environment:
       - MLFLOW_TRACKING_URI=http://localhost:5001
     command: mlflow server --host 0.0.0.0 --port 5001
-    
+    networks:
+      - local-network
 
   training:
     build:
       context: .
       dockerfile: train.Dockerfile
     volumes:
-      # - ./mlruns:/opt/mlflow/models
       - ./classifier:/app/classifier
       - ./config:/app/config
     environment:
       - PYTHONPATH=${PYTHONPATH}:/app
       - MLFLOW_TRACKING_URI=http://mlflow-server:5001
       - GIT_PYTHON_REFRESH=quiet
-      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - mlflow-server
-    # ports:
-    #   - "5002:5002"
-    command: poetry run python classifier/main.py --experiment_name trec-classifier --config config/config.yml
+    command: poetry run python classifier/main.py --experiment_name trec-classifier --config config/config.yml --endpoint_url http://localstack:4566
+    networks:
+      - local-network
 
   inference:
     build:
@@ -46,4 +44,59 @@ services:
     depends_on:
       - mlflow-server
     command: poetry run flask run --host 0.0.0.0 --port 5000
-    # command: poetry run curl http://mlflow-server:5001/api/2.0/mlflow/experiments/list
+
+  airflow:
+    image: apache/airflow
+    container_name: airflow
+#    environment:
+##      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+##      AIRFLOW__CORE__EXECUTOR: "LocalExecutor"
+#      AIRFLOW__WEBSERVER__RBAC: "True"
+#      AIRFLOW__CORE__SQL_ALCHEMY_CONN: "sqlite:////tmp/airflow.db"
+##      AIRFLOW__CORE__FERNET_KEY: "fernet_key"
+#      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+##      AIRFLOW__API__AUTH_BACKEND: "airflow.api.auth.backend.basic_auth"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    ports:
+      - "8080:8080"
+    depends_on:
+      - localstack
+    networks:
+      - local-network
+    command: >
+      bash -c "airflow standalone"
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sagemaker  # Enable S3, SageMaker
+      - DEBUG=1
+#      - PERSISTENCE=1
+#      - DATA_DIR=/tmp/localstack/data
+#    volumes:
+#      - ./localstack:/tmp/localstack
+    networks:
+      - local-network
+
+  upload-script:
+    build:
+      context: .
+      dockerfile: localstack.Dockerfile
+    depends_on:
+      - localstack
+    volumes:
+      - ./scripts:/scripts
+      - ./data-original:/data-original
+    command: python /scripts/upload_data.py
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    driver: bridge

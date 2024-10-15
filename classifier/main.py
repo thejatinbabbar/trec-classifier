@@ -31,32 +31,36 @@ if __name__ == "__main__":
     mlflow.set_tracking_uri(config["mlflow"]["mlflow_uri"])
     mlflow.set_experiment(experiment_name=f"{args.experiment_name}-{step_to_execute}")
 
-    s3_client = boto3.client("s3", endpoint_url=args.endpoint_url)
+    s3_client = boto3.client("s3", endpoint_url=args.endpoint_url, aws_access_key_id='localstack', aws_secret_access_key='localstack', region_name='us-east-1')
     download_from_s3(s3_client, config["data"]["s3_bucket"], config["data"]["local_uri"], config["data"]["s3_prefix"])
 
     if step_to_execute == "train":
 
-        training_config = config["training"]
-        for param, value in training_config.items():
+        config_model = config["model"]
+        config_experiment = config["experiment"]
+
+        for param, value in config["model"].items():
+            mlflow.log_param(param, value)
+        for param, value in config["experiment"].items():
             mlflow.log_param(param, value)
 
         # Initialize data module
         trec_data_module = TRECDataModule(
             data_uri=config["data"]["local_uri"],
-            tokenizer=training_config["pretrained_model_name"],
-            batch_size=training_config["batch_size"],
-            max_length=training_config["max_length"],
-            n_workers=training_config["n_workers"],
-            test_size=training_config["test_size"],
-            seed=training_config["seed"],
+            tokenizer=config_model["pretrained_model_name"],
+            batch_size=config_model["batch_size"],
+            max_length=config_model["max_length"],
+            n_workers=config_experiment["n_workers"],
+            test_size=config_experiment["test_size"],
+            seed=config_experiment["seed"],
         )
 
         # Initialize model
         model = Classifier(
-            n_classes=training_config["n_classes"],
-            learning_rate=training_config["learning_rate"],
-            max_epochs=training_config["max_epochs"],
-            pretrained_model_name=training_config["pretrained_model_name"],
+            n_classes=config_model["n_classes"],
+            learning_rate=config_model["learning_rate"],
+            max_epochs=config_model["max_epochs"],
+            pretrained_model_name=config_model["pretrained_model_name"],
         )
 
         # Train model
@@ -66,8 +70,8 @@ if __name__ == "__main__":
         model.evaluate_model(trec_data_module)
 
         # Export model
-        pytorch_file_path = training_config["output_model_pytorch"]
-        onnx_file_path = training_config["output_model_onnx"]
+        pytorch_file_path = config_model["output_model_pytorch"]
+        onnx_file_path = config_model["output_model_onnx"]
 
         model.save_model(pytorch_file_path, onnx_file_path)
         # mlflow.log_artifact(pytorch_file_path)

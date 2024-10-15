@@ -7,15 +7,15 @@ from classifier.model import Classifier
 
 @pytest.fixture
 def data_module(config):
-    training_config = config["training"]
 
     return TRECDataModule(
-        tokenizer=training_config["pretrained_model_name"],
-        batch_size=training_config["batch_size"],
-        max_length=training_config["max_length"],
-        n_workers=training_config["n_workers"],
-        test_size=training_config["test_size"],
-        seed=training_config["seed"],
+        data_uri=config["data"]["local_uri"],
+        tokenizer=config["model"]["pretrained_model_name"],
+        batch_size=config["model"]["batch_size"],
+        max_length=config["model"]["max_length"],
+        n_workers=config["experiment"]["n_workers"],
+        test_size=config["experiment"]["test_size"],
+        seed=config["experiment"]["seed"],
     )
 
 
@@ -26,11 +26,11 @@ def config():
 
 @pytest.fixture
 def model(config):
-    training_config = config["training"]
+    config_model = config["model"]
 
     return Classifier(
-        n_classes=training_config["n_classes"],
-        learning_rate=training_config["learning_rate"],
-        max_epochs=training_config["max_epochs"],
-        pretrained_model_name=training_config["pretrained_model_name"],
+        n_classes=config_model["n_classes"],
+        learning_rate=config_model["learning_rate"],
+        max_epochs=config_model["max_epochs"],
+        pretrained_model_name=config_model["pretrained_model_name"],
     )
