@@ -15,24 +15,24 @@ install:
 
 # Formatting with Black
 black:
-	poetry run black classifier/
+	poetry run black classifier/ config/ scripts/ app/ tests/
 
 # Sorting imports with isort
 isort:
-	poetry run isort classifier/
+	poetry run isort classifier/ config/ scripts/ app/ tests/
 
 # Linting with flake8
 flake8:
-	poetry run flake8 classifier/
+	poetry run flake8 classifier/ config/ scripts/ app/ tests/
 
 # Run all formatting and linting
 format: black isort
 
 # Check formatting and linting
 check:
-	poetry run black --check classifier/ ; \
-	poetry run isort --check-only classifier/ ; \
-	poetry run flake8 classifier/
+	poetry run black --check classifier/ config/ scripts/ app/ tests/ ; \
+	poetry run isort --check-only classifier/ config/ scripts/ app/ tests/ ; \
+	poetry run flake8 classifier/ config/ scripts/ app/ tests/
 
 test:
 	poetry run pytest --cov=classifier --cov=app
