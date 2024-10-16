@@ -1,11 +1,11 @@
 import pytest  # noqa
 
 
-def test_data_loaders(data_module):
+def test_data_split(data_module):
 
-    assert len(data_module.train_dataloader()) > 0, "Training dataloader should not be empty"
-    assert len(data_module.val_dataloader()) > 0, "Validation dataloader should not be empty"
-    assert len(data_module.test_dataloader()) > 0, "Test dataloader should not be empty"
+    assert len(data_module.train_dataset) == 16
+    assert len(data_module.val_dataset) == 4
+    assert len(data_module.test_dataset) == 20
 
 
 def test_batch_shape(data_module, config):

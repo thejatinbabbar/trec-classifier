@@ -1,13 +1,7 @@
-import yaml
-
 from classifier.inference import InferencePipeline
 
 
-def test_inference():
-
-    config = yaml.safe_load(open("config/config.yml"))
-
-    config["model"]["output_model_onnx"] = "tests/model.onnx"
+def test_inference(config):
 
     pipeline = InferencePipeline(config)
     text = "How did serfdom develop in and then leave Russia ?"
