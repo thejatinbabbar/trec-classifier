@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: trec-classifier
+    env: docker
+    buildCommand: make build_app
+    startCommand: make run_app
+    plan: free
+    ports:
+      - 5000
+    dockerfilePath: ./inference.Dockerfile
+    branch: main
