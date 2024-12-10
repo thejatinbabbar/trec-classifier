@@ -37,8 +37,11 @@ check:
 test:
 	poetry run pytest --cov=classifier --cov=app
 
+build_app:
+	docker build -t trec-inference . -f inference.Dockerfile
+
 run_training:
 	docker compose up --build training
 
 run_app:
-	docker compose up --build inference
+	docker run -p 5000:5000 trec-inference
