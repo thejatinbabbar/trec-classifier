@@ -14,7 +14,7 @@ class InferencePipeline:
 
         self.config = config
 
-        model_file = self.config["model"]["output_model_onnx"]
+        model_file = os.path.join(self.config["inference"]["artifacts_uri"], self.config["model"]["output_model_onnx"])
 
         if os.path.exists(model_file):
             self.session = ort.InferenceSession(model_file)

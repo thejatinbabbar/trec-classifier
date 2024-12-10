@@ -25,6 +25,7 @@ experiment:
 
 inference:
   onnx_model_uri: "models:/trec-classifier/1"
+  artifacts_uri: "artifacts"
 
 flask:
   host: "0.0.0.0"
