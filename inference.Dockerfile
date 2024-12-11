@@ -10,10 +10,10 @@ RUN pip install poetry --root-user-action=ignore
 RUN poetry install
 
 COPY artifacts /app/artifacts
-COPY classifier /app/classifier
-COPY app /app/app
+COPY pipeline /app/pipeline
 COPY config /app/config
 COPY data /app/data
+COPY app /app/app
 
 EXPOSE 8501
 
