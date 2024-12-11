@@ -6,7 +6,7 @@ import onnxruntime as ort
 import torch
 from transformers import AutoTokenizer
 
-from classifier.data import generate_encodings
+from data.data import generate_encodings
 
 
 class InferencePipeline:
@@ -34,4 +34,5 @@ class InferencePipeline:
         outputs = self.session.run(output_names=["output"], input_feed=inputs)
         logits = torch.tensor(outputs[0])
         predicted_class_id = torch.argmax(logits, dim=-1).item()
-        return predicted_class_id
+        confidence_score = torch.softmax(logits[0], dim=-1)[predicted_class_id].item()
+        return predicted_class_id, confidence_score

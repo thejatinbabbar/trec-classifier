@@ -7,8 +7,8 @@ import mlflow
 import onnx
 import yaml
 
-from classifier.data import TRECDataModule, download_from_s3
-from classifier.model import Classifier
+from data.data import TRECDataModule, download_from_s3
+from pipeline.model import Classifier
 
 if __name__ == "__main__":
 

@@ -1,4 +1,4 @@
-from classifier.inference import InferencePipeline
+from app.inference import InferencePipeline
 
 
 def test_inference(config):

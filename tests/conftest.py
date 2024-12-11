@@ -1,8 +1,8 @@
 import pytest
 import yaml
 
-from classifier.data import TRECDataModule
-from classifier.model import Classifier
+from data.data import TRECDataModule
+from pipeline.model import Classifier
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ def data_module(config):
 @pytest.fixture
 def config():
     config_yml = yaml.safe_load(open("config/config.yml"))
-    config_yml["model"]["output_model_onnx"] = "tests/model.onnx"
+    config_yml["model"]["output_model_onnx"] = "model.onnx"
     config_yml["data"]["local_uri"] = "tests/test_data"
     return config_yml
 
