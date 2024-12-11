@@ -2,18 +2,21 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY pyproject.toml /app/
-COPY app /app/app
-COPY classifier /app/classifier
-COPY config /app/config
-COPY artifacts /app/artifacts
+COPY app/pyproject.toml /app/
+COPY app/poetry.lock /app/
 
 RUN pip install --upgrade pip --root-user-action=ignore
 RUN pip install poetry --root-user-action=ignore
 RUN poetry install
 
-ENV FLASK_APP=app/flask_app.py
+COPY artifacts /app/artifacts
+COPY classifier /app/classifier
+COPY app /app/app
+COPY config /app/config
+COPY data /app/data
 
-EXPOSE 5000
+EXPOSE 8501
 
-CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0", "--port=5000"]
+ENV PYTHONPATH=${PYTHONPATH}:/app
+
+CMD ["poetry", "run", "streamlit", "run", "/app/app/streamlit_app.py"]

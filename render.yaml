@@ -6,3 +6,4 @@ services:
     plan: free
     dockerfilePath: ./inference.Dockerfile
     branch: main
+    port: 8501

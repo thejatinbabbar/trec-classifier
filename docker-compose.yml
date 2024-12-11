@@ -35,20 +35,21 @@ services:
       context: .
       dockerfile: inference.Dockerfile
     ports:
-      - "8050:5000"    # Expose Flask app
+      - "8501:8501"
     volumes:
-      - ./artifacts:/app/artifacts/
+      - ./artifacts:/app/artifacts
       - ./classifier:/app/classifier
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./data:/app/data
     environment:
       - MLFLOW_TRACKING_URI=http://mlflow-server:5001
       - PYTHONPATH=${PYTHONPATH}:/app
-      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    depends_on:
-      - mlflow-server
-    command: poetry run flask run --host 0.0.0.0 --port 5000
+    command: poetry run streamlit run app/streamlit_app.py
     networks:
       - local-network
+    depends_on:
+      - mlflow-server
 
   airflow:
     image: apache/airflow

@@ -30,12 +30,12 @@ format: black isort
 
 # Check formatting and linting
 check:
-	poetry run black --check classifier/ config/ scripts/ app/ tests/ ; \
-	poetry run isort --check-only classifier/ config/ scripts/ app/ tests/ ; \
-	poetry run flake8 classifier/ config/ scripts/ app/ tests/
+	poetry run black --check pipeline/ config/ scripts/ app/ tests/ ; \
+	poetry run isort --check-only pipeline/ config/ scripts/ app/ tests/ ; \
+	poetry run flake8 pipeline/ config/ scripts/ app/ tests/
 
 test:
-	poetry run pytest --cov=classifier --cov=app
+	poetry run pytest --cov=pipeline --cov=app
 
 build_app:
 	docker build -t trec-inference . -f inference.Dockerfile
@@ -44,4 +44,4 @@ run_training:
 	docker compose up --build training
 
 run_app:
-	docker run -p 5000:5000 trec-inference
+	docker run -p 8501:8501 trec-inference
