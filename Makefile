@@ -44,4 +44,4 @@ run_training:
 	docker compose up --build training
 
 run_app:
-	docker run -p 8501:8501 trec-inference
+	docker run --memory="6g" -p 8501:8501 trec-inference
